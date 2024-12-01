@@ -1,6 +1,9 @@
+from collections import Counter
+
 import pytest
 
-from main import part1, part2, split_ids, create_lists, get_distance, sum_distances
+from main import part1, part2, split_ids, create_lists, get_distance, sum_distances, get_similarity_score, \
+    sum_similarity_scores
 
 filename = "example.txt"
 
@@ -22,7 +25,7 @@ def test_part2():
     # When
     result = part2(lines)
     # Then
-    assert result == 0
+    assert result == 31
 
 
 def test_split_ids():
@@ -72,3 +75,28 @@ def test_sum_distances():
     result = sum_distances(first_list, second_list)
     # Then
     assert result == 11
+
+
+@pytest.mark.parametrize("first, expected",
+                         [(1, 0),
+                          (2, 0),
+                          (3, 9),
+                          (4, 4)
+                          ])
+def test_get_similarity_score(first, expected):
+    # Given
+    second_list_counter = Counter([3, 3, 3, 4, 5, 9])
+    # When
+    result = get_similarity_score(first, second_list_counter)
+    # Then
+    assert result == expected
+
+
+def test_sum_similarity_scores():
+    # Given
+    first_list_counter = Counter([1, 2, 3, 3, 3, 4])
+    second_list_counter = Counter([3, 3, 3, 4, 5, 9])
+    # When
+    result = sum_similarity_scores(first_list_counter, second_list_counter)
+    # Then
+    assert result == 31

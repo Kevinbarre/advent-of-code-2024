@@ -1,10 +1,14 @@
+from collections import Counter
+
+
 def part1(lines):
     first_list, second_list = create_lists(lines)
     return sum_distances(first_list, second_list)
 
 
 def part2(lines):
-    return 0
+    first_list_counter, second_list_counter = (Counter(created_list) for created_list in create_lists(lines))
+    return sum_similarity_scores(first_list_counter, second_list_counter)
 
 
 def split_ids(line):
@@ -32,6 +36,17 @@ def sum_distances(first_list, second_list):
     total = 0
     for first, second in zip(first_list, second_list):
         total += get_distance(first, second)
+    return total
+
+
+def get_similarity_score(first, second_list_counter):
+    return second_list_counter[first] * first
+
+
+def sum_similarity_scores(first_list_counter, second_list_counter):
+    total = 0
+    for first, count in first_list_counter.items():
+        total += get_similarity_score(first, second_list_counter) * count
     return total
 
 
