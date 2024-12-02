@@ -4,7 +4,8 @@ def part1(lines):
 
 
 def part2(lines):
-    return 0
+    reports = read_reports(lines)
+    return count_safe_reports_with_dampener(reports)
 
 
 def read_reports(lines):
@@ -21,6 +22,20 @@ def is_safe(report):
 
 def count_safe_reports(reports):
     return sum(1 for report in reports if is_safe(report))
+
+
+def is_safe_with_dampener(report):
+    if is_safe(report):
+        return True
+    for i in range(len(report)):
+        new_report = [level for index, level in enumerate(report) if index != i]
+        if is_safe(new_report):
+            return True
+    return False
+
+
+def count_safe_reports_with_dampener(reports):
+    return sum(1 for report in reports if is_safe_with_dampener(report))
 
 
 if __name__ == '__main__':

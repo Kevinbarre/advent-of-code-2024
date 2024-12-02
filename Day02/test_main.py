@@ -1,6 +1,7 @@
 import pytest
 
-from main import part1, part2, read_reports, is_safe, count_safe_reports
+from main import part1, part2, read_reports, is_safe, count_safe_reports, is_safe_with_dampener, \
+    count_safe_reports_with_dampener
 
 filename = "example.txt"
 
@@ -22,7 +23,7 @@ def test_part2():
     # When
     result = part2(lines)
     # Then
-    assert result == 0
+    assert result == 4
 
 
 def test_read_reports():
@@ -78,3 +79,35 @@ def test_count_safe_reports():
     result = count_safe_reports(reports)
     # Then
     assert result == 2
+
+
+@pytest.mark.parametrize("report, expected",
+                         [([7, 6, 4, 2, 1], True),
+                          ([1, 2, 7, 8, 9], False),
+                          ([9, 7, 6, 2, 1], False),
+                          ([1, 3, 2, 4, 5], True),
+                          ([8, 6, 4, 4, 1], True),
+                          ([1, 3, 6, 7, 9], True)
+                          ])
+def test_is_safe(report, expected):
+    # Given
+    # When
+    result = is_safe_with_dampener(report)
+    # Then
+    assert result == expected
+
+
+def test_count_safe_reports_with_dampener():
+    # Given
+    reports = [
+        [7, 6, 4, 2, 1],
+        [1, 2, 7, 8, 9],
+        [9, 7, 6, 2, 1],
+        [1, 3, 2, 4, 5],
+        [8, 6, 4, 4, 1],
+        [1, 3, 6, 7, 9]
+    ]
+    # When
+    result = count_safe_reports_with_dampener(reports)
+    # Then
+    assert result == 4
