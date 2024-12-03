@@ -8,7 +8,9 @@ def part1(lines):
 
 
 def part2(lines):
-    return 0
+    instruction_line = ''.join(lines)
+    instructions = parse_instruction_line_with_conditions(instruction_line)
+    return sum_instructions(instructions)
 
 
 def parse_instruction_line(instruction_line):
@@ -25,6 +27,25 @@ def compute_instruction(instruction):
 
 def sum_instructions(instructions):
     return sum(compute_instruction(instruction) for instruction in instructions)
+
+
+def parse_instruction_line_with_conditions(instruction_line):
+    DO = "do()"
+    DONT = "don't()"
+    valid = True
+    remaining = instruction_line
+    instructions = []
+    while remaining:
+        if valid:
+            # Search for next don't()
+            raw_instructions, _, remaining = remaining.partition(DONT)
+            instructions.extend(parse_instruction_line(raw_instructions))
+            valid = False
+        else:
+            # Search for next do()
+            _, _, remaining = remaining.partition(DO)
+            valid = True
+    return instructions
 
 
 if __name__ == '__main__':
