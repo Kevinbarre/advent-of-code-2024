@@ -1,4 +1,7 @@
-from main import part1, part2, parse_instruction_line, compute_instruction, sum_instructions
+import pytest
+
+from main import part1, part2, parse_instruction_line, compute_instruction, sum_instructions, \
+    parse_instruction_line_with_conditions
 
 filename = "example.txt"
 
@@ -15,12 +18,12 @@ def test_part1():
 
 def test_part2():
     # Given
-    with open(filename) as f:
+    with open("example2.txt") as f:
         lines = f.read().splitlines()
     # When
     result = part2(lines)
     # Then
-    assert result == 0
+    assert result == 48
 
 
 def test_parse_instruction_line():
@@ -48,3 +51,15 @@ def test_sum_instructions():
     result = sum_instructions(instructions)
     # Then
     assert result == 161
+
+
+@pytest.mark.parametrize("instruction_line, expected",
+                         [("xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))", ["mul(2,4)", "mul(8,5)"]),
+                          ("xmul(2,4)&mul[3,7]!^do()_mul(5,5)+mul(32,64](mul(11,8)undon't()?mul(8,5))", ["mul(2,4)", "mul(5,5)", "mul(11,8)"])
+                          ])
+def test_parse_instruction_line_with_conditions(instruction_line, expected):
+    # Given
+    # When
+    result = parse_instruction_line_with_conditions(instruction_line)
+    # Then
+    assert result == expected
