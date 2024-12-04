@@ -3,7 +3,7 @@ def part1(lines):
 
 
 def part2(lines):
-    return 0
+    return count_x_mas(lines)
 
 
 def count_horizontal(word_search):
@@ -42,6 +42,34 @@ def count_all_diagonal(word_search):
 
 def count_xmas(word_search):
     return count_horizontal(word_search) + count_vertical(word_search) + count_all_diagonal(word_search)
+
+
+def is_x_mas(word_search, x, y):
+    """
+    Search for an X-MAS, in the two diagonals directions, assuming (x,y) are the coordinates of an A, always at the center of the cross
+
+    :param word_search: Grid to search for
+    :param x: X coordinate (column)
+    :param y: Y coordinate (row)
+    :return: True if an X-MAS is found, False otherwise
+    """
+    count_mas = 0
+    # Top-left to bottom-right diagonal
+    if word_search[y - 1][x - 1] == 'M' and word_search[y + 1][x + 1] == 'S' or word_search[y - 1][x - 1] == 'S' and word_search[y + 1][x + 1] == 'M':
+        count_mas += 1
+    # Top-right to bottom-left diagonal
+    if word_search[y - 1][x + 1] == 'M' and word_search[y + 1][x - 1] == 'S' or word_search[y - 1][x + 1] == 'S' and word_search[y + 1][x - 1] == 'M':
+        count_mas += 1
+    return count_mas == 2
+
+
+def count_x_mas(word_search):
+    total = 0
+    for y in range(1, len(word_search) - 1):
+        for x in range(1, len(word_search[y]) - 1):
+            if word_search[y][x] == 'A' and is_x_mas(word_search, x, y):
+                total += 1
+    return total
 
 
 if __name__ == '__main__':
