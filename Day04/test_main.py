@@ -1,4 +1,6 @@
-from main import part1, part2, count_horizontal, rotate, count_vertical, count_diagonal_bottom_right, count_all_diagonal, count_xmas
+import pytest
+
+from main import part1, part2, count_horizontal, rotate, count_vertical, count_diagonal_bottom_right, count_all_diagonal, count_xmas, is_x_mas, count_x_mas
 
 filename = "example.txt"
 
@@ -20,7 +22,7 @@ def test_part2():
     # When
     result = part2(lines)
     # Then
-    assert result == 0
+    assert result == 9
 
 
 def test_count_horizontal():
@@ -142,3 +144,59 @@ def test_count_xmas():
     result = count_xmas(word_search)
     # Then
     assert result == 18
+
+
+@pytest.mark.parametrize("word_search, expected",
+                         [(["M.S",
+                            ".A.",
+                            "M.S"], True),
+                          (["S.S",
+                            ".A.",
+                            "M.M"], True),
+                          (["M.M",
+                            ".A.",
+                            "S.S"], True),
+                          (["S.M",
+                            ".A.",
+                            "S.M"], True),
+                          ([".M.",
+                            "MAS",
+                            ".S."], False),
+                          (["S.M",
+                            ".A.",
+                            "M.S"], False),
+                          (["M..",
+                            ".A.",
+                            "..S"], False),
+                          ])
+def test_is_mas(word_search, expected):
+    # Given
+    word_search = [
+        "M.S",
+        ".A.",
+        "M.S"
+    ]
+    # When
+    result = is_x_mas(word_search, 1, 1)
+    # Then
+    assert result == True
+
+
+def test_count_x_mas():
+    # Given
+    word_search = [
+        "MMMSXXMASM",
+        "MSAMXMSMSA",
+        "AMXSXMAAMM",
+        "MSAMASMSMX",
+        "XMASAMXAMM",
+        "XXAMMXXAMA",
+        "SMSMSASXSS",
+        "SAXAMASAAA",
+        "MAMMMXMMMM",
+        "MXMXAXMASX"
+    ]
+    # When
+    result = count_x_mas(word_search)
+    # Then
+    assert result == 9
