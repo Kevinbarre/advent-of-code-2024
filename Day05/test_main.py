@@ -1,6 +1,7 @@
 import pytest
 
-from main import part1, part2, parse_input, is_correctly_placed, is_in_order, get_middle_page_number, sum_correctly_updated_pages
+from main import part1, part2, parse_input, is_correctly_placed, is_in_order, get_middle_page_number, sum_correctly_updated_pages, reorder, \
+    get_reordered_page_updates, sum_reordered_page_updates
 
 filename = "example.txt"
 
@@ -22,7 +23,7 @@ def test_part2():
     # When
     result = part2(lines)
     # Then
-    assert result == 0
+    assert result == 123
 
 
 def test_parse_input():
@@ -154,3 +155,76 @@ def test_sum_correctly_updated_pages():
     result = sum_correctly_updated_pages(page_updates, page_ordering_rules)
     # Then
     assert result == 143
+
+
+@pytest.mark.parametrize("page_update, expected",
+                         [([75, 97, 47, 61, 53], [97, 75, 47, 61, 53]),
+                          ([61, 13, 29], [61, 29, 13]),
+                          ([97, 13, 75, 29, 47], [97, 75, 47, 29, 13])
+                          ])
+def test_reorder(page_update, expected):
+    # Given
+    page_ordering_rules = {
+        47: {53, 13, 61, 29},
+        97: {13, 61, 47, 29, 53, 75},
+        75: {29, 53, 47, 61, 13},
+        61: {13, 53, 29},
+        29: {13},
+        53: {29, 13},
+    }
+    # When
+    result = reorder(page_update, page_ordering_rules)
+    # Then
+    assert result == expected
+
+
+def test_get_reordered_page_updates():
+    # Given
+    page_ordering_rules = {
+        47: {53, 13, 61, 29},
+        97: {13, 61, 47, 29, 53, 75},
+        75: {29, 53, 47, 61, 13},
+        61: {13, 53, 29},
+        29: {13},
+        53: {29, 13},
+    }
+    page_updates = [
+        [75, 47, 61, 53, 29],
+        [97, 61, 53, 29, 13],
+        [75, 29, 13],
+        [75, 97, 47, 61, 53],
+        [61, 13, 29],
+        [97, 13, 75, 29, 47]
+    ]
+    # When
+    result = get_reordered_page_updates(page_updates, page_ordering_rules)
+    # Then
+    assert result == [
+        [97, 75, 47, 61, 53],
+        [61, 29, 13],
+        [97, 75, 47, 29, 13]
+    ]
+
+
+def test_sum_reordered_page_updates():
+    # Given
+    page_ordering_rules = {
+        47: {53, 13, 61, 29},
+        97: {13, 61, 47, 29, 53, 75},
+        75: {29, 53, 47, 61, 13},
+        61: {13, 53, 29},
+        29: {13},
+        53: {29, 13},
+    }
+    page_updates = [
+        [75, 47, 61, 53, 29],
+        [97, 61, 53, 29, 13],
+        [75, 29, 13],
+        [75, 97, 47, 61, 53],
+        [61, 13, 29],
+        [97, 13, 75, 29, 47]
+    ]
+    # When
+    result = sum_reordered_page_updates(page_updates, page_ordering_rules)
+    # Then
+    assert result == 123
