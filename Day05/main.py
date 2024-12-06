@@ -4,7 +4,8 @@ def part1(lines):
 
 
 def part2(lines):
-    return 0
+    page_ordering_rules, page_updates = parse_input(lines)
+    return sum_reordered_page_updates(page_updates, page_ordering_rules)
 
 
 def parse_input(lines):
@@ -51,6 +52,31 @@ def get_middle_page_number(page_update):
 
 def sum_correctly_updated_pages(page_updates, page_ordering_rules):
     return sum(get_middle_page_number(page_update) for page_update in page_updates if is_in_order(page_update, page_ordering_rules))
+
+
+def reorder(page_update, page_ordering_rules):
+    # Case when the list is empty
+    if not page_update:
+        return page_update
+    first = page_update[0]
+    if is_correctly_placed(first, page_update, page_ordering_rules):
+        # First number is correctly placed, keep it here and reorder the remaining elements in the list
+        return [first] + reorder(page_update[1:], page_ordering_rules)
+    else:
+        # First number is not correctly placed, shift it and the end, and try to reorder again
+        return reorder(page_update[1:] + [first], page_ordering_rules)
+
+
+def get_reordered_page_updates(page_updates, page_ordering_rules):
+    reordered_page_updates = []
+    for page_update in page_updates:
+        if not is_in_order(page_update, page_ordering_rules):
+            reordered_page_updates.append(reorder(page_update, page_ordering_rules))
+    return reordered_page_updates
+
+
+def sum_reordered_page_updates(page_updates, page_ordering_rules):
+    return sum(get_middle_page_number(page_update) for page_update in get_reordered_page_updates(page_updates, page_ordering_rules))
 
 
 if __name__ == '__main__':
