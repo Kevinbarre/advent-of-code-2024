@@ -9,7 +9,8 @@ def part1(lines):
 
 def part2(lines):
     equations = parse_input(lines)
-    return get_total_calibration_result2(equations)
+    # return get_total_calibration_result2(equations)
+    return get_total_calibration_result_right_to_left(equations)
 
 
 class Operators(Enum):
@@ -96,6 +97,56 @@ def get_total_calibration_result2(equations):
     total = 0
     for equation in equations:
         if evaluate2(equation):
+            total += equation[0]
+    return total
+
+
+def get_possible_operators_right_to_left(length):
+    return {elem for elem in itertools.product(Operators2, repeat=length)}
+
+
+def unconcat(left, right):
+    return int(str(left).removesuffix(str(right)))
+
+
+def evaluate_right_to_left(equation):
+    test_value, numbers = equation
+    target = numbers[0]
+    possible_operators = get_possible_operators_right_to_left(len(numbers) - 1)
+    for possible_operator in possible_operators:
+        current_value = test_value
+        premature_exit = False
+        for number, operator in zip(reversed(numbers[1:]), possible_operator):
+            if operator == Operators2.ADD:
+                current_value -= number
+                if current_value < target:
+                    # Going below target, can stop processing this iteration
+                    premature_exit = True
+                    break
+            elif operator == Operators2.MULT:
+                if current_value % number == 0:
+                    current_value //= number
+                else:
+                    # Not divisible, can stop processing this iteration
+                    premature_exit = True
+                    break
+            else:  # operator == Operators2.CONCAT
+                if str(current_value).endswith(str(number)) and current_value != number:
+                    current_value = unconcat(current_value, number)
+                else:
+                    # Not ending with the number, can stop processing this iteration
+                    premature_exit = True
+                    break
+        if not premature_exit and current_value == target:
+            # Found a working way of combining operators
+            return True
+    return False
+
+
+def get_total_calibration_result_right_to_left(equations):
+    total = 0
+    for equation in equations:
+        if evaluate_right_to_left(equation):
             total += equation[0]
     return total
 
