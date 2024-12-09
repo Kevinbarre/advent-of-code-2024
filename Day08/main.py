@@ -8,7 +8,8 @@ def part1(lines):
 
 
 def part2(lines):
-    return 0
+    antennas, city_dimensions = parse_input(lines)
+    return count_unique_antinodes_with_harmonics(antennas, city_dimensions)
 
 
 def parse_input(lines):
@@ -32,6 +33,40 @@ def count_unique_antinodes(antennas, city_dimensions):
     for frequency, positions in antennas.items():
         for first_antenna, second_antenna in itertools.combinations(positions, 2):
             antinodes.update(get_antinodes(first_antenna, second_antenna, city_dimensions))
+    return len(antinodes)
+
+
+def get_antinodes_with_harmonics(first_antenna, second_antenna, city_dimensions):
+    antenna_spacing = (first_antenna[0] - second_antenna[0], first_antenna[1] - second_antenna[1])
+    antinodes = set()
+    #  First direction
+    multiplier = 0
+    while True:
+        antinode = (first_antenna[0] + multiplier * antenna_spacing[0], first_antenna[1] + multiplier * antenna_spacing[1])
+        if 0 <= antinode[0] < city_dimensions[0] and 0 <= antinode[1] < city_dimensions[1]:
+            antinodes.add(antinode)
+            multiplier += 1
+        else:
+            # Outside the map
+            break
+    # Second direction
+    multiplier = 0
+    while True:
+        antinode = (first_antenna[0] - multiplier * antenna_spacing[0], first_antenna[1] - multiplier * antenna_spacing[1])
+        if 0 <= antinode[0] < city_dimensions[0] and 0 <= antinode[1] < city_dimensions[1]:
+            antinodes.add(antinode)
+            multiplier += 1
+        else:
+            # Outside the map
+            break
+    return antinodes
+
+
+def count_unique_antinodes_with_harmonics(antennas, city_dimensions):
+    antinodes = set()
+    for frequency, positions in antennas.items():
+        for first_antenna, second_antenna in itertools.combinations(positions, 2):
+            antinodes.update(get_antinodes_with_harmonics(first_antenna, second_antenna, city_dimensions))
     return len(antinodes)
 
 
