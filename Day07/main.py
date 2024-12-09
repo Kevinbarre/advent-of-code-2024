@@ -8,12 +8,19 @@ def part1(lines):
 
 
 def part2(lines):
-    return 0
+    equations = parse_input(lines)
+    return get_total_calibration_result2(equations)
 
 
 class Operators(Enum):
     ADD = '+',
     MULT = '*'
+
+
+class Operators2(Enum):
+    ADD = '+',
+    MULT = '*',
+    CONCAT = '||'
 
 
 def parse_input(lines):
@@ -50,6 +57,45 @@ def get_total_calibration_result(equations):
     total = 0
     for equation in equations:
         if evaluate(equation):
+            total += equation[0]
+    return total
+
+
+def get_possible_operators2(length):
+    exclusion = {elem for elem in itertools.product((Operators2.ADD, Operators2.MULT), repeat=length)}
+    return {elem for elem in itertools.product(Operators2, repeat=length)} - exclusion
+
+
+def concat(left, right):
+    return int(str(left) + str(right))
+
+
+def evaluate2(equation):
+    # First check if only using ADD and MULT it works:
+    if evaluate(equation):
+        return True
+    # Otherwise try also using the combinations with concat
+    test_value, numbers = equation
+    possible_operators = get_possible_operators2(len(numbers) - 1)
+    for possible_operator in possible_operators:
+        total = numbers[0]
+        for number, operator in zip(numbers[1:], possible_operator):
+            if operator == Operators2.ADD:
+                total += number
+            elif operator == Operators2.MULT:
+                total *= number
+            else:  # operator == Operators2.CONCAT
+                total = concat(total, number)
+        if total == test_value:
+            # Found a working way of combining operators
+            return True
+    return False
+
+
+def get_total_calibration_result2(equations):
+    total = 0
+    for equation in equations:
+        if evaluate2(equation):
             total += equation[0]
     return total
 
