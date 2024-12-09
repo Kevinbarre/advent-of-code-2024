@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import NamedTuple
 
 
@@ -8,7 +9,8 @@ def part1(lines):
 
 
 def part2(lines):
-    return 0
+    starting_position, level = parse_level(lines)
+    return count_loops(starting_position, level)
 
 
 class Direction(NamedTuple):
@@ -75,6 +77,45 @@ def run_through_level(starting_position, input_level):
 
 def count_x(level):
     return sum(1 for row in level for cell in row if cell == 'X')
+
+
+def get_obstacle_positions(starting_position, level):
+    obstacle_positions = set()
+    _, final_level, _ = run_through_level(starting_position, level)
+    for j in range(len(final_level)):
+        for i in range(len(final_level[j])):
+            if final_level[j][i] == 'X':
+                obstacle_positions.add((i, j))
+    obstacle_positions.remove(starting_position)
+    return obstacle_positions
+
+
+def is_loop(starting_position, input_level):
+    position = starting_position
+    level = input_level
+    direction = UP
+    encountered_states = {(position, direction)}
+    done = False
+    while not done:
+        position, level, direction, done = move(position, level, direction)
+        current_state = (position, direction)
+        if current_state in encountered_states and not done:
+            # We've already been in this state, we're stuck in a loop
+            return True
+        encountered_states.add((position, direction))
+    # We managed to exit from the level, this is not a loop
+    return False
+
+
+def count_loops(starting_position, level):
+    obstacle_positions = get_obstacle_positions(starting_position, level)
+    loop_count = 0
+    for i, j in obstacle_positions:
+        temp_level = deepcopy(level)
+        temp_level[j][i] = '#'
+        if is_loop(starting_position, temp_level):
+            loop_count += 1
+    return loop_count
 
 
 if __name__ == '__main__':
