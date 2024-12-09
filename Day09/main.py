@@ -5,7 +5,9 @@ def part1(lines):
 
 
 def part2(lines):
-    return 0
+    disk_map = parse_input(lines)
+    disk_map = reorganize_whole_files(disk_map)
+    return calculate_checksum(disk_map)
 
 
 def parse_input(lines):
@@ -46,10 +48,63 @@ def calculate_checksum(disk_map):
     checksum = 0
     for i, file_id in enumerate(disk_map):
         if file_id == '.':
-            # Reached the empty spaces
-            break
+            # Reached an empty space
+            continue
         checksum += i * int(file_id)
     return checksum
+
+
+def search_next_empty_space(disk_map, file_size, j):
+    i = 0
+    # Search for next empty space
+    while i < len(disk_map) + j:
+        if disk_map[i] != '.':
+            i += 1
+            continue
+        # Empty space found, count number of consecutive spaces
+        k = i
+        while k < len(disk_map) and disk_map[k] == '.':
+            k += 1
+        if k - i >= file_size:
+            # Empty space large enough found, return index of first block
+            return i
+        else:  # Restarting from k current value
+            i = k
+    # Outside the disk_map
+    return False
+
+
+def reorganize_whole_files(disk_map):
+    j = -1
+    while True:
+        # Search for next occupied space
+        while j >= -len(disk_map) and disk_map[j] == '.':
+            j -= 1
+        if j < -len(disk_map):
+            # Outside the disk_map, nothing left to do
+            return disk_map
+        # Occupied space found, check file size
+        file_id = disk_map[j]
+        k = j
+        while k >= -len(disk_map) and disk_map[k] == file_id:
+            k -= 1
+        if k < -len(disk_map):
+            # Outside of disk_map, nothing left to do
+            return disk_map
+        file_size = j - k
+        # Search for next empty space starting from beginning that could fit the file, but not after j
+        i = search_next_empty_space(disk_map, file_size, j)
+        if i:
+            # Swap blocks
+            for m in range(file_size):
+                # Swap blocks
+                disk_map[i + m] = disk_map[j - m]
+                disk_map[j - m] = '.'
+            # Restarting from k
+            j = k
+        else:
+            # No space large enough found, skipping current file by restarting from k
+            j = k
 
 
 if __name__ == '__main__':
