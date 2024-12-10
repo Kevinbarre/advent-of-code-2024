@@ -7,7 +7,8 @@ def part1(lines):
 
 
 def part2(lines):
-    return 0
+    topographic_map = parse_input(lines)
+    return get_sum_trailhead_ratings(topographic_map)
 
 
 def parse_input(lines):
@@ -57,6 +58,16 @@ def get_trailhead_score(trailhead, topographic_map):
 def get_sum_trailhead_scores(topographic_map):
     trailheads = find_trailheads(topographic_map)
     return sum(get_trailhead_score(trailhead, topographic_map) for trailhead in trailheads)
+
+
+def get_trailhead_rating(trailhead, topographic_map):
+    hiking_trails = find_hiking_trails(trailhead, topographic_map)
+    return len(hiking_trails)
+
+
+def get_sum_trailhead_ratings(topographic_map):
+    trailheads = find_trailheads(topographic_map)
+    return sum(get_trailhead_rating(trailhead, topographic_map) for trailhead in trailheads)
 
 
 if __name__ == '__main__':
