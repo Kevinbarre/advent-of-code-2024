@@ -1,6 +1,7 @@
 import pytest
 
-from main import part1, part2, parse_input, find_trailheads, get_trailhead_score, get_neighbours, find_hiking_trails, get_sum_trailhead_scores
+from main import part1, part2, parse_input, find_trailheads, get_trailhead_score, get_neighbours, find_hiking_trails, get_sum_trailhead_scores, \
+    get_trailhead_rating, get_sum_trailhead_ratings
 
 filename = "example.txt"
 
@@ -22,7 +23,7 @@ def test_part2():
     # When
     result = part2(lines)
     # Then
-    assert result == 0
+    assert result == 81
 
 
 def test_parse_input():
@@ -172,3 +173,40 @@ def test_get_sum_trailhead_scores():
     result = get_sum_trailhead_scores(topographic_map)
     # Then
     assert result == 36
+
+
+def test_get_trailhead_rating():
+    # Given
+    trailhead = (2, 0)
+    topographic_map = [
+        [8, 9, 0, 1, 0, 1, 2, 3],
+        [7, 8, 1, 2, 1, 8, 7, 4],
+        [8, 7, 4, 3, 0, 9, 6, 5],
+        [9, 6, 5, 4, 9, 8, 7, 4],
+        [4, 5, 6, 7, 8, 9, 0, 3],
+        [3, 2, 0, 1, 9, 0, 1, 2],
+        [0, 1, 3, 2, 9, 8, 0, 1],
+        [1, 0, 4, 5, 6, 7, 3, 2]
+    ]
+    # When
+    result = get_trailhead_rating(trailhead, topographic_map)
+    # Then
+    assert result == 20
+
+
+def test_get_sum_trailhead_ratings():
+    # Given
+    topographic_map = [
+        [8, 9, 0, 1, 0, 1, 2, 3],
+        [7, 8, 1, 2, 1, 8, 7, 4],
+        [8, 7, 4, 3, 0, 9, 6, 5],
+        [9, 6, 5, 4, 9, 8, 7, 4],
+        [4, 5, 6, 7, 8, 9, 0, 3],
+        [3, 2, 0, 1, 9, 0, 1, 2],
+        [0, 1, 3, 2, 9, 8, 0, 1],
+        [1, 0, 4, 5, 6, 7, 3, 2]
+    ]
+    # When
+    result = get_sum_trailhead_ratings(topographic_map)
+    # Then
+    assert result == 81
