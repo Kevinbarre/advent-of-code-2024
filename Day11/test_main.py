@@ -22,7 +22,7 @@ def test_part2():
     # When
     result = part2(lines)
     # Then
-    assert result == 0
+    assert result == 65601038650482
 
 
 def test_parse_arrangement():

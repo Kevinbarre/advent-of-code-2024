@@ -8,7 +8,9 @@ def part1(lines):
 
 
 def part2(lines):
-    return 0
+    arrangement = parse_arrangement(lines)
+    arrangement = multiple_steps(arrangement, 75)
+    return count_stones(arrangement)
 
 
 def parse_arrangement(lines):
