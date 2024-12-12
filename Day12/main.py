@@ -8,7 +8,9 @@ def part1(lines):
 
 
 def part2(lines):
-    return 0
+    regions_by_plot = find_regions_by_plot(lines)
+    regions = get_distinct_regions(regions_by_plot)
+    return get_total_price_with_discount(regions)
 
 
 class Direction(NamedTuple):
@@ -23,23 +25,25 @@ RIGHT = Direction(1, 0)
 
 
 class Region:
-    def __init__(self, letter: chr, members: set, perimeter: int):
+    def __init__(self, letter: chr, members: set, perimeter: int, sides: int):
         self.letter = letter
         self.members = members
         self.perimeter = perimeter
+        self.sides = sides
 
     def __eq__(self, other):
-        return self.letter == other.letter and self.members == other.members and self.perimeter == other.perimeter
+        return self.letter == other.letter and self.members == other.members and self.perimeter == other.perimeter and self.sides == other.sides
 
     def __hash__(self):
-        return hash((self.letter, tuple(self.members), self.perimeter))
+        return hash((self.letter, tuple(self.members), self.perimeter, self.sides))
 
     def __repr__(self):
-        return "Region('{}', {}, {})".format(self.letter, self.members, self.perimeter)
+        return "Region('{}', {}, {}, {})".format(self.letter, self.members, self.perimeter, self.sides)
 
-    def add_member(self, plot, perimeter):
+    def add_member(self, plot, perimeter, sides):
         self.members.add(plot)
         self.perimeter += perimeter
+        self.sides += sides
 
     def merge(self, region, regions_by_plot):
         # Do not merge with self
@@ -47,6 +51,7 @@ class Region:
             return
         self.members.update(region.members)
         self.perimeter += region.perimeter
+        self.sides += region.sides
         for member in region.members:
             regions_by_plot[member] = self
 
@@ -74,8 +79,9 @@ def check_plot(plot, garden, regions_by_plot: dict[tuple, Region]):
     current_letter = garden[y][x]
     neighbours = get_neighbours(plot, garden)
     perimeter_contribution = 4 - sum(1 for _, _, letter in neighbours.values() if letter == current_letter)
+    side_contributions = count_corners(plot, garden)
     # First create a region for the current plot
-    current_region = Region(current_letter, {plot}, perimeter_contribution)
+    current_region = Region(current_letter, {plot}, perimeter_contribution, side_contributions)
     regions_by_plot[plot] = current_region
     if LEFT in neighbours:
         left_neighbour_x, left_neighbour_y, left_neighbour_letter = neighbours[LEFT]
@@ -107,6 +113,55 @@ def get_distinct_regions(regions_by_plot):
 
 def get_total_price(regions):
     return sum(region.area * region.perimeter for region in regions)
+
+
+def count_corners(plot, garden):
+    total = 0
+    x, y = plot
+    height = len(garden)
+    width = len(garden[0])
+    current_letter = garden[y][x]
+    above_letter = garden[y - 1][x] if y - 1 >= 0 else None
+    below_letter = garden[y + 1][x] if y + 1 < height else None
+    left_letter = garden[y][x - 1] if x - 1 >= 0 else None
+    right_letter = garden[y][x + 1] if x + 1 < width else None
+    diagonal_top_left_letter = garden[y - 1][x - 1] if x - 1 >= 0 and y - 1 >= 0 else None
+    diagonal_top_right_letter = garden[y - 1][x + 1] if x + 1 < width and y - 1 >= 0 else None
+    diagonal_bottom_left_letter = garden[y + 1][x - 1] if x - 1 >= 0 and y + 1 < height else None
+    diagonal_bottom_right_letter = garden[y + 1][x + 1] if x + 1 < width and y + 1 < height else None
+    # Top-left corner
+    if current_letter != above_letter and current_letter != left_letter:
+        # Case when there is no continuous letter
+        total += 1
+    if current_letter == above_letter == left_letter and current_letter != diagonal_top_left_letter:
+        # Case when there is an angle
+        total += 1
+    # Top-right corner
+    if current_letter != above_letter and current_letter != right_letter:
+        # Case when there is no continuous letter
+        total += 1
+    if current_letter == above_letter == right_letter and current_letter != diagonal_top_right_letter:
+        # Case when there is an angle
+        total += 1
+    # Bottom-left corner
+    if current_letter != below_letter and current_letter != left_letter:
+        # Case when there is no continuous letter
+        total += 1
+    if current_letter == below_letter == left_letter and current_letter != diagonal_bottom_left_letter:
+        # Case when there is an angle
+        total += 1
+    # Bottom-right corner
+    if current_letter != below_letter and current_letter != right_letter:
+        # Case when there is no continuous letter
+        total += 1
+    if current_letter == below_letter == right_letter and current_letter != diagonal_bottom_right_letter:
+        # Case when there is an angle
+        total += 1
+    return total
+
+
+def get_total_price_with_discount(regions):
+    return sum(region.area * region.sides for region in regions)
 
 
 if __name__ == '__main__':
