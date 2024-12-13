@@ -1,6 +1,6 @@
 import pytest
 
-from main import part1, part2, parse_input, split_input_line, find_cheapest_solution, get_cheapest_cost, sum_total_tokens
+from main import part1, part2, parse_input, split_input_line, find_cheapest_solution, get_cheapest_cost, sum_total_tokens, recalibrate_claw_machine
 
 filename = "example.txt"
 
@@ -22,7 +22,7 @@ def test_part2():
     # When
     result = part2(lines)
     # Then
-    assert result == 0
+    assert result == 875318608908
 
 
 @pytest.mark.parametrize("raw_line, expected",
@@ -106,3 +106,26 @@ def test_sum_total_tokens():
     result = sum_total_tokens(claw_machines)
     # Then
     assert result == 480
+
+
+def test_recalibrate_claw_machine():
+    # Given
+    claw_machine = ((94, 34), (22, 67), (8400, 5400))
+    # When
+    result = recalibrate_claw_machine(claw_machine)
+    # Then
+    assert result == ((94, 34), (22, 67), (10000000008400, 10000000005400))
+
+
+@pytest.mark.parametrize("claw_machine, expected",
+                         [(((94, 34), (22, 67), (10000000008400, 10000000005400)), False),
+                          (((26, 66), (67, 21), (10000000012748, 10000000012176)), (118679050709, 103199174542)),
+                          (((17, 86), (84, 37), (10000000007870, 10000000006450)), False),
+                          (((69, 23), (27, 71), (10000000018641, 10000000010279)), (102851800151, 107526881786))
+                          ])
+def test_find_cheapest_solution_recalibrated(claw_machine, expected):
+    # Given
+    # When
+    result = find_cheapest_solution(claw_machine)
+    # Then
+    assert result == expected

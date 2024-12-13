@@ -4,7 +4,9 @@ def part1(lines):
 
 
 def part2(lines):
-    return 0
+    claw_machines = parse_input(lines)
+    claw_machines = [recalibrate_claw_machine(claw_machine) for claw_machine in claw_machines]
+    return sum_total_tokens(claw_machines)
 
 
 def split_input_line(raw_line):
@@ -71,6 +73,12 @@ def sum_total_tokens(claw_machines):
         if solution:
             total += get_cheapest_cost(solution)
     return total
+
+
+def recalibrate_claw_machine(claw_machine):
+    a, b, prize = claw_machine
+    new_prize = tuple(10000000000000 + x for x in prize)
+    return a, b, new_prize
 
 
 if __name__ == '__main__':
