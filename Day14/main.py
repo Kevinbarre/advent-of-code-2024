@@ -1,4 +1,6 @@
 import math
+from collections import Counter
+from pprint import pprint
 
 
 def part1(lines, width, height):
@@ -8,8 +10,20 @@ def part1(lines, width, height):
     return safety_factor(number_robots)
 
 
-def part2(lines):
-    return 0
+def part2(lines, width, height):
+    robots = parse_robots(lines)
+    lowest_safety_factor = safety_factor(count_quadrants(move_robots(robots, 0, width, height), width, height))
+    lowest_time = 0
+    for time in range(1, 10000):
+        positions = move_robots(robots, time, width, height)
+        new_safety_factor = safety_factor(count_quadrants(positions, width, height))
+        if new_safety_factor < lowest_safety_factor:
+            lowest_safety_factor = new_safety_factor
+            lowest_time = time
+            print("====== Time {} =====".format(time))
+            robots_picture = get_robots_picture(positions, width, height)
+            pprint(robots_picture)
+    return lowest_time
 
 
 class Robot:
@@ -66,11 +80,23 @@ def safety_factor(number_robots):
     return math.prod(number_robots)
 
 
+def get_robots_picture(positions: list[tuple[int, int]], width, height):
+    counter = Counter(positions)
+    picture = []
+    for y in range(height):
+        row = ""
+        for x in range(width):
+            number_robots = counter[(x, y)]
+            representation = str(number_robots) if number_robots != 0 else '.'
+            row += representation
+        picture.append(row)
+    return picture
+
+
 if __name__ == '__main__':
     with open("input.txt") as f:
         f_lines = f.read().splitlines()
     WIDTH = 101
     HEIGHT = 103
-
     print("Part 1 : ", part1(f_lines, WIDTH, HEIGHT))
-    print("Part 2 : ", part2(f_lines))
+    print("Part 2 : ", part2(f_lines, WIDTH, HEIGHT))

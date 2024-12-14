@@ -1,6 +1,6 @@
 import pytest
 
-from main import part1, part2, parse_robots, Robot, count_quadrants, safety_factor, move_robots
+from main import part1, part2, parse_robots, Robot, count_quadrants, safety_factor, move_robots, get_robots_picture
 
 filename = "example.txt"
 
@@ -21,8 +21,10 @@ def test_part2():
     # Given
     with open(filename) as f:
         lines = f.read().splitlines()
+    width = 11
+    height = 7
     # When
-    result = part2(lines)
+    result = part2(lines, width, height)
     # Then
     assert result == 0
 
@@ -150,3 +152,35 @@ def test_safety_factor():
     result = safety_factor(number_robots)
     # Then
     assert result == 12
+
+
+def test_get_robots_picture():
+    # Given
+    positions = [
+        (3, 5),
+        (5, 4),
+        (9, 0),
+        (4, 5),
+        (1, 6),
+        (1, 3),
+        (6, 0),
+        (2, 3),
+        (0, 2),
+        (6, 0),
+        (4, 5),
+        (6, 6)
+    ]
+    width = 11
+    height = 7
+    # When
+    result = get_robots_picture(positions, width, height)
+    # Then
+    assert result == [
+        "......2..1.",
+        "...........",
+        "1..........",
+        ".11........",
+        ".....1.....",
+        "...12......",
+        ".1....1....",
+    ]
