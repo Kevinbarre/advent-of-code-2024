@@ -9,7 +9,9 @@ def part1(lines):
 
 
 def part2(lines):
-    return 0
+    level, start, end = parse_level(lines)
+    all_paths = dijkstra_all_paths(level, start, end)
+    return count_distinct_cells(all_paths)
 
 
 class Direction(NamedTuple):
@@ -71,6 +73,42 @@ def dijkstra(level, start, end):
                 # Add next position to next cells with its current direction and path used to reach it
                 new_path = path + [next_position]
                 heapq.heappush(next_cells, (updated_score, next_position, next_direction, new_path))
+
+
+def dijkstra_all_paths(level, start, end):
+    scores = {(start, RIGHT): 0}
+    next_cells = [(0, start, RIGHT, [start])]
+    success_path = set()
+    success_score = math.inf
+    while next_cells:
+        cell_score, cell_position, cell_direction, path = heapq.heappop(next_cells)
+        if cell_position == end:
+            # End reached, found one possible path
+            # Memorize the best possible score if not already the case
+            if success_score == math.inf:
+                success_score = cell_score
+            # Check if found path is one of the best ones
+            if cell_score == success_score:
+                success_path.add(tuple(path))
+            # Keep checking other paths
+            continue
+        possible_moves = get_possible_moves(level, cell_position, cell_direction)
+        for next_position, next_direction, next_score in possible_moves:
+            updated_score = cell_score + next_score
+            if updated_score > success_score:
+                # Already found better, skip this one
+                continue
+            if updated_score <= scores.get((next_position, next_direction), math.inf):
+                # Update scores with the new one to next position with next direction if it's lower than existing one
+                scores[(next_position, next_direction)] = updated_score
+                # Add next position to next cells with its current direction and path used to reach it
+                new_path = path + [next_position]
+                heapq.heappush(next_cells, (updated_score, next_position, next_direction, new_path))
+    return success_path
+
+
+def count_distinct_cells(all_paths):
+    return len({cell for path in all_paths for cell in path})
 
 
 if __name__ == '__main__':

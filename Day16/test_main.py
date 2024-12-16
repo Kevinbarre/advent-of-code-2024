@@ -1,6 +1,7 @@
 import pytest
 
-from main import part1, part2, parse_level, RIGHT, LEFT, UP, DOWN, get_possible_moves, get_next_direction_score, dijkstra
+from main import part1, part2, parse_level, RIGHT, LEFT, UP, DOWN, get_possible_moves, get_next_direction_score, dijkstra, dijkstra_all_paths, \
+    count_distinct_cells
 
 
 @pytest.mark.parametrize("filename, expected",
@@ -22,8 +23,8 @@ def test_part1(filename, expected):
 
 
 @pytest.mark.parametrize("filename, expected",
-                         [("example.txt", 0),
-                          ("example2.txt", 0)
+                         [("example.txt", 45),
+                          ("example2.txt", 64)
                           ])
 def test_part2(filename, expected):
     # Given
@@ -199,3 +200,37 @@ def test_dijkstra_example6():
     result = dijkstra(level, start, end)
     # Then
     assert result == 4013
+
+
+def test_dijkstra_all_paths():
+    # Given
+    level = [
+        "#####",
+        "###.#",
+        "#...#",
+        "#.#.#",
+        "#...#",
+        "#.###",
+        "#####"
+    ]
+    start = (1, 5)
+    end = (3, 1)
+    # When
+    result = dijkstra_all_paths(level, start, end)
+    # Then
+    assert result == {
+        tuple([(1, 5), (1, 4), (1, 3), (1, 2), (2, 2), (3, 2), (3, 1)]),
+        tuple([(1, 5), (1, 4), (2, 4), (3, 4), (3, 3), (3, 2), (3, 1)])
+    }
+
+
+def test_count_distinct_cells():
+    # Given
+    all_paths = {
+        tuple([(1, 5), (1, 4), (1, 3), (1, 2), (2, 2), (3, 2), (3, 1)]),
+        tuple([(1, 5), (1, 4), (2, 4), (3, 4), (3, 3), (3, 2), (3, 1)])
+    }
+    # When
+    result = count_distinct_cells(all_paths)
+    # Then
+    assert result == 10
