@@ -5,7 +5,8 @@ def part1(lines):
 
 
 def part2(lines):
-    return 0
+    _, b, c, instructions = parse_input(lines)
+    return find_a(b, c, instructions)
 
 
 def parse_input(lines):
@@ -85,6 +86,36 @@ def execute_program(a, b, c, instructions):
 
 def join_outputs(outputs):
     return ','.join(str(output) for output in outputs)
+
+
+def build_octal(a_octal_digits):
+    power = len(a_octal_digits) - 1
+    return sum(digit * (8 ** (power - i)) for i, digit in enumerate(a_octal_digits))
+
+
+def find_a(b, c, instructions):
+    power = len(instructions) - 1
+    i = 0
+    a_octal_digits = [0] * len(instructions)
+    a_octal_digits[0] = 1
+    while power >= 0:
+        sublist = instructions[power:]
+        a = build_octal(a_octal_digits)
+        _, _, _, outputs = execute_program(a, b, c, instructions)
+        if outputs[power:] == sublist:
+            # Correct 'a' found for this power, move on to the next index
+            i += 1
+            power -= 1
+        else:
+            # Increment digit for current index
+            a_octal_digits[i] += 1
+            while a_octal_digits[i] == 8:
+                # No solution found, need to go back to the previous digit
+                a_octal_digits[i] = 0
+                i -= 1
+                a_octal_digits[i] += 1
+                power += 1
+    return build_octal(a_octal_digits)
 
 
 if __name__ == '__main__':

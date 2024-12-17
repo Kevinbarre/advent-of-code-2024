@@ -1,6 +1,6 @@
 import pytest
 
-from main import part1, part2, parse_input, dv, combo_operand, xor, mod8, jump, execute_instruction, execute_program, join_outputs
+from main import part1, part2, parse_input, dv, combo_operand, xor, mod8, jump, execute_instruction, execute_program, join_outputs, find_a, build_octal
 
 filename = "example.txt"
 
@@ -17,12 +17,12 @@ def test_part1():
 
 def test_part2():
     # Given
-    with open(filename) as f:
+    with open("example2.txt") as f:
         lines = f.read().splitlines()
     # When
     result = part2(lines)
     # Then
-    assert result == 0
+    assert result == 117440
 
 
 def test_parse_input():
@@ -187,3 +187,23 @@ def test_join_outputs():
     result = join_outputs(outputs)
     # Then
     assert result == "4,6,3,5,6,3,5,2,1,0"
+
+
+def test_build_octal():
+    # Given
+    a_octal_digits = [1, 2, 4, 3, 7, 1]
+    # When
+    result = build_octal(a_octal_digits)
+    # Then
+    assert result == 0o124371
+
+
+def test_find_a():
+    # Given
+    b = 0
+    c = 0
+    instructions = [0, 3, 5, 4, 3, 0]
+    # When
+    result = find_a(b, c, instructions)
+    # Then
+    assert result == 117440
