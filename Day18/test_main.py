@@ -1,4 +1,4 @@
-from main import part1, part2, parse_coordinates, generate_grid, simulate_fall, get_possible_moves, dijkstra
+from main import part1, part2, parse_coordinates, generate_grid, simulate_fall, get_possible_moves, dijkstra, get_blocking_coordinate
 
 filename = "example.txt"
 
@@ -18,9 +18,9 @@ def test_part2():
     with open(filename) as f:
         lines = f.read().splitlines()
     # When
-    result = part2(lines)
+    result = part2(lines, 6, 12)
     # Then
-    assert result == 0
+    assert result == "6,1"
 
 
 def test_parse_coordinates():
@@ -171,3 +171,26 @@ def test_dijkstra():
     result = dijkstra(grid, start, end)
     # Then
     assert result == 22
+
+
+def test_get_blocking_coordinate():
+    # Given
+    grid = [
+        ['#', '#', '#', '#', '#', '#', '#', '#', '#'],
+        ['#', '.', '.', '.', '.', '.', '.', '.', '#'],
+        ['#', '.', '.', '.', '.', '.', '.', '.', '#'],
+        ['#', '.', '.', '.', '.', '.', '.', '.', '#'],
+        ['#', '.', '.', '.', '.', '.', '.', '.', '#'],
+        ['#', '.', '.', '.', '.', '.', '.', '.', '#'],
+        ['#', '.', '.', '.', '.', '.', '.', '.', '#'],
+        ['#', '.', '.', '.', '.', '.', '.', '.', '#'],
+        ['#', '#', '#', '#', '#', '#', '#', '#', '#']
+    ]
+    start = (1, 1)
+    end = (7, 7)
+    coordinates = [(5, 4), (4, 2), (4, 5), (3, 0), (2, 1), (6, 3), (2, 4), (1, 5), (0, 6), (3, 3), (2, 6), (5, 1), (1, 2), (5, 5), (2, 5), (6, 5), (1, 4),
+                   (0, 4), (6, 4), (1, 1), (6, 1), (1, 0), (0, 5), (1, 6), (2, 0)]
+    # When
+    result = get_blocking_coordinate(grid, start, end, coordinates, 12)
+    # Then
+    assert result == (6, 1)

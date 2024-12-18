@@ -1,5 +1,6 @@
 import heapq
 import math
+from copy import deepcopy
 from typing import NamedTuple
 
 
@@ -10,8 +11,11 @@ def part1(lines, grid_size, number_bytes):
     return dijkstra(grid, start, end)
 
 
-def part2(lines):
-    return 0
+def part2(lines, grid_size, number_bytes):
+    coordinates = parse_coordinates(lines)
+    grid, start, end = generate_grid(grid_size)
+    blocking_coordinate = get_blocking_coordinate(grid, start, end, coordinates, number_bytes)
+    return "{},{}".format(blocking_coordinate[0], blocking_coordinate[1])
 
 
 class Direction(NamedTuple):
@@ -42,9 +46,10 @@ def generate_grid(grid_size):
 
 
 def simulate_fall(grid, coordinates, number_bytes):
+    grid_copy = deepcopy(grid)
     for x, y in coordinates[:number_bytes]:
-        grid[y + 1][x + 1] = '#'
-    return grid
+        grid_copy[y + 1][x + 1] = '#'
+    return grid_copy
 
 
 def get_possible_moves(grid, position):
@@ -75,9 +80,26 @@ def dijkstra(grid, start, end):
                 heapq.heappush(next_cells, (updated_score, next_position, new_path))
 
 
+def get_blocking_coordinate(grid, start, end, coordinates, number_bytes):
+    working_index = number_bytes - 1
+    non_working_index = len(coordinates) - 1
+    i = (working_index + non_working_index) // 2
+    while i != working_index:
+        new_grid = simulate_fall(grid, coordinates, i + 1)
+        path_found = dijkstra(new_grid, start, end)
+        if path_found is None:
+            # Update non working index
+            non_working_index = i
+        else:
+            # Update working index
+            working_index = i
+        i = (working_index + non_working_index) // 2
+    return coordinates[i + 1]
+
+
 if __name__ == '__main__':
     with open("input.txt") as f:
         f_lines = f.read().splitlines()
 
     print("Part 1 : ", part1(f_lines, 70, 1024))
-    print("Part 2 : ", part2(f_lines))
+    print("Part 2 : ", part2(f_lines, 70, 1024))
