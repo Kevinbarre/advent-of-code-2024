@@ -1,6 +1,6 @@
 import pytest
 
-from main import part1, part2, parse_towels, check_design, count_possible_designs
+from main import part1, part2, parse_towels, check_design, count_possible_designs, find_all_arrangements, count_all_arrangements
 
 filename = "example.txt"
 
@@ -22,7 +22,7 @@ def test_part2():
     # When
     result = part2(lines)
     # Then
-    assert result == 0
+    assert result == 16
 
 
 def test_parse_towels():
@@ -92,3 +92,41 @@ def test_count_possible_designs():
     result = count_possible_designs(designs, towels)
     # Then
     assert result == 6
+
+
+@pytest.mark.parametrize("design, expected",
+                         [("brwrr", 2),
+                          ("bggr", 1),
+                          ("gbbr", 4),
+                          ("rrbgbr", 6),
+                          ("ubwu", 0),
+                          ("bwurrg", 1),
+                          ("brgr", 2),
+                          ("bbrgwb", 0)
+                          ])
+def test_find_all_arrangements(design, expected):
+    # Given
+    towels = {"r", "wr", "b", "g", "bwu", "rb", "gb", "br"}
+    # When
+    result = find_all_arrangements(design, towels)
+    # Then
+    assert result == expected
+
+
+def test_count_all_arrangements():
+    # Given
+    towels = {"r", "wr", "b", "g", "bwu", "rb", "gb", "br"}
+    designs = [
+        "brwrr",
+        "bggr",
+        "gbbr",
+        "rrbgbr",
+        "ubwu",
+        "bwurrg",
+        "brgr",
+        "bbrgwb"
+    ]
+    # When
+    result = count_all_arrangements(designs, towels)
+    # Then
+    assert result == 16
