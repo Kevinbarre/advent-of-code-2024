@@ -1,3 +1,4 @@
+import itertools
 from collections import Counter
 from typing import NamedTuple
 
@@ -11,7 +12,10 @@ def part1(lines):
 
 
 def part2(lines):
-    return 0
+    racetrack, start, end = parse_racetrack(lines)
+    path = find_path(racetrack, start, end)
+    time_saved = find_possible_cheats_max_time(path, 20)
+    return count_cheats_saving_at_least(time_saved, 100)
 
 
 class Direction(NamedTuple):
@@ -104,6 +108,23 @@ def find_time_saved(path, possible_cheats):
 def count_cheats_saving_at_least(time_saved, time):
     counter = Counter(time_saved.values())
     return sum(number_cheats for time_value, number_cheats in counter.items() if time_value >= time)
+
+
+def find_possible_cheats_max_time(path, max_time):
+    possible_cheats = {}
+    for start, end in itertools.combinations(path.keys(), 2):
+        if path[start] > path[end]:
+            # Not a shortcut if we go back on the racetrack
+            continue
+        manhattan_distance = abs(start[0] - end[0]) + abs(start[1] - end[1])
+        if manhattan_distance > max_time:
+            # Shortcut not allowed, requires more time than the maximum
+            continue
+        time_saved = path[end] - path[start] - manhattan_distance
+        if time_saved > 0:
+            # Shortcut actually saving some time, save it
+            possible_cheats[(start, end)] = time_saved
+    return possible_cheats
 
 
 if __name__ == '__main__':
