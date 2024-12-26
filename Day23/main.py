@@ -9,7 +9,9 @@ def part1(lines):
 
 
 def part2(lines):
-    return 0
+    graph = parse_edges(lines)
+    largest_set = find_largest_set(graph)
+    return find_password(largest_set)
 
 
 def parse_edges(lines):
@@ -33,6 +35,14 @@ def _start_with_t(clique):
 
 def find_cliques_with_t(cliques):
     return set(clique for clique in cliques if _start_with_t(clique))
+
+
+def find_largest_set(graph):
+    return set(max(nx.find_cliques(graph), key=len))
+
+
+def find_password(largest_set):
+    return ",".join(sorted(largest_set))
 
 
 if __name__ == '__main__':

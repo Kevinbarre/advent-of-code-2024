@@ -1,4 +1,4 @@
-from main import part1, part2, parse_edges, find_sets_three_computers, find_cliques_with_t
+from main import part1, part2, parse_edges, find_sets_three_computers, find_cliques_with_t, find_largest_set, find_password
 
 filename = "example.txt"
 
@@ -20,7 +20,7 @@ def test_part2():
     # When
     result = part2(lines)
     # Then
-    assert result == 0
+    assert result == "co,de,ka,ta"
 
 
 def test_parse_edges():
@@ -150,3 +150,55 @@ def test_find_cliques_with_t():
         frozenset({"tc", "td", "wh"}),
         frozenset({"td", "wh", "yn"})
     }
+
+
+def test_find_largest_set():
+    # Given
+    lines = [
+        "kh-tc",
+        "qp-kh",
+        "de-cg",
+        "ka-co",
+        "yn-aq",
+        "qp-ub",
+        "cg-tb",
+        "vc-aq",
+        "tb-ka",
+        "wh-tc",
+        "yn-cg",
+        "kh-ub",
+        "ta-co",
+        "de-co",
+        "tc-td",
+        "tb-wq",
+        "wh-td",
+        "ta-ka",
+        "td-qp",
+        "aq-cg",
+        "wq-ub",
+        "ub-vc",
+        "de-ta",
+        "wq-aq",
+        "wq-vc",
+        "wh-yn",
+        "ka-de",
+        "kh-ta",
+        "co-tc",
+        "wh-qp",
+        "tb-vc",
+        "td-yn"
+    ]
+    graph = parse_edges(lines)
+    # When
+    result = find_largest_set(graph)
+    # Then
+    assert result == {"co", "de", "ka", "ta"}
+
+
+def test_find_password():
+    # Given
+    largest_set = {"ka", "de", "co", "ta"}
+    # When
+    result = find_password(largest_set)
+    # Then
+    assert result == "co,de,ka,ta"
