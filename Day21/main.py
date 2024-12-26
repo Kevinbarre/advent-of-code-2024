@@ -1,9 +1,12 @@
+import functools
+
+
 def part1(lines):
     return sum(get_complexity(code, 3) for code in lines)
 
 
 def part2(lines):
-    return 0
+    return sum(get_complexity(code, 26) for code in lines)
 
 
 # Taken from reddit: The best path has this priority : < first, then ^ or v , and then >
@@ -160,6 +163,7 @@ SHORTEST_PATHS_DIRECTIONAL_KEYPAD = {
 }
 
 
+@functools.cache
 def _get_shortest_sequence_directional(sequence, depth):
     if depth == 0:
         return len(sequence)

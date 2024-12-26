@@ -22,7 +22,7 @@ def test_part2():
     # When
     result = part2(lines)
     # Then
-    assert result == 0
+    assert result == 154115708116294
 
 
 @pytest.mark.parametrize("code, expected",
